@@ -1,0 +1,12 @@
+/*
+
+!.gitignore
+
+!Core
+!Drivers
+!STM32H755ZITX_FLASH.ld
+!STM32H755ZITX_RAM.ld
+!.project
+!.cproject
+
+!CMakeLists.txt

@@ -1,0 +1,14 @@
+/*
+!.gitignore
+
+!CM4
+!CM7
+!Common
+!Drivers
+!stm32h755.ioc
+!.mxproject
+!.project
+
+!Makefile
+!cmake
+!.clang-format

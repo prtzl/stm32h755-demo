@@ -1,0 +1,9 @@
+/*
+
+!.gitignore
+!README.md
+
+!default.nix
+!.envrc
+
+!stm32h755
