@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 # ##############################################################################
-project(cm7)
+project(${PROJECT_NAME}-cm7)
 include(../cmake/arm-build.cmake)
 
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/PROJECT)

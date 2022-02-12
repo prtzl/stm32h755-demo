@@ -1,5 +1,7 @@
 .PHONY: all build cmake clean format
 
+PROJECT_NAME := project
+
 CM4_DIR := CM4
 CM7_DIR := CM7
 
@@ -18,6 +20,7 @@ cmake_cm4:
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DCMAKE_TOOLCHAIN_FILE=../cmake/gcc-arm-none-eabi.cmake \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+		-DPROJECT_NAME=${PROJECT_NAME} \
 		${CM4_DIR}
 
 cmake_cm7:
@@ -26,6 +29,7 @@ cmake_cm7:
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DCMAKE_TOOLCHAIN_FILE=../cmake/gcc-arm-none-eabi.cmake \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+		-DPROJECT_NAME=${PROJECT_NAME} \
 		${CM7_DIR}
 
 cm4: cmake_cm4
