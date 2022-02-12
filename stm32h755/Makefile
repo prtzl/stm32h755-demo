@@ -40,6 +40,11 @@ cm7: cmake_cm7
 
 build: cm4 cm7
 
+flash: build
+	# Flashing CM4 fails
+	#st-flash write ${CM4_BUILD_DIR}/${PROJECT_NAME}-cm4.bin 0x08100000
+	st-flash --reset write ${CM7_BUILD_DIR}/${PROJECT_NAME}-cm7.bin 0x08000000
+
 SRCS := $(shell find . -name '*.[ch]' -or -name '*.[ch]pp')
 format: $(addsuffix .format,${SRCS})
 
