@@ -52,7 +52,6 @@ set(DEFAULT_LINKER_OPTIONS
     -lc
     -lm
     -lstdc++
-    -lsupc++
     -Wl,--end-group
     -Wl,--print-memory-usage)
 
