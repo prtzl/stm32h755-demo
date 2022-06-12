@@ -4,6 +4,18 @@
 !README.md
 
 !default.nix
+!flake.*
 !.envrc
 
-!stm32h755
+!CM4
+!CM7
+!Common
+!Drivers
+!stm32h755.ioc
+!.mxproject
+!.project
+
+!Makefile
+!CMakeLists.txt
+!gcc-arm-none-eabi.cmake
+!.clang-format
