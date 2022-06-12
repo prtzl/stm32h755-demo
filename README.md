@@ -17,7 +17,7 @@ make -j<threads>
 
 You can also just configure CMake:
 
-``shell
+```shell
 make cmake
 ```
 
