@@ -112,7 +112,7 @@ set(SHARED_COMPILE_OPTIONS
     -Wshadow
     -Wdouble-promotion
     -Wformat=2 -Wformat-truncation
-    -Wundef
+    #-Wundef
     -fno-common
     -Wno-unused-parameter
     $<$<COMPILE_LANGUAGE:CXX>:
