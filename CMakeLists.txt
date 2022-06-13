@@ -1,5 +1,5 @@
 # STM32 Minimal CMake project for C/C++ projects
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 ###############################################################################
 # Set project name and source code folder location
 
@@ -48,6 +48,28 @@ set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
+
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wshadow
+    -Wdouble-promotion
+    -Wformat=2 -Wformat-truncation
+    #-Wundef
+    -fno-common
+    -Wno-unused-parameter
+    "$<$<COMPILE_LANGUAGE:CXX>:-Wconversion;-Wno-volatile;-Wold-style-cast;-Wuseless-cast;-Wsuggest-override>"
+    "$<$<CONFIG:Debug>:-Og;-g3;-ggdb>"
+    "$<$<CONFIG:Release>:-Og;-g0>")
+
+add_link_options(
+    -Wl,--start-group
+    -lc
+    -lm
+    -lstdc++
+    -Wl,--end-group
+    -Wl,--print-memory-usage)
 
 ###############################################################################
 
@@ -105,51 +127,21 @@ target_include_directories(${CM7_EXE} PRIVATE
 
 ###############################################################################
 
-set(SHARED_COMPILE_OPTIONS
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wshadow
-    -Wdouble-promotion
-    -Wformat=2 -Wformat-truncation
-    #-Wundef
-    -fno-common
-    -Wno-unused-parameter
-    $<$<COMPILE_LANGUAGE:CXX>:
-        -Wconversion
-        -Wno-volatile
-        -Wold-style-cast
-        -Wuseless-cast
-        -Wsuggest-override>
-    $<$<CONFIG:Debug>:-Og -g3 -ggdb>
-    $<$<CONFIG:Release>:-Og -g0>)
-
-set(SHARED_LINK_OPTIONS
-    -Wl,-Map=${CMAKE_PROJECT_NAME}.map
-    -Wl,--start-group
-    -lc
-    -lm
-    -lstdc++
-    -Wl,--end-group
-    -Wl,--print-memory-usage)
-
 target_compile_options(${CM4_EXE} PRIVATE
-    ${CM4_CPU_PARAMETERS}
-    ${SHARED_COMPILE_OPTIONS})
+    ${CM4_CPU_PARAMETERS})
 
 target_link_options(${CM4_EXE} PRIVATE
     -T${CM4_LINKER_SCRIPT}
-    ${CM4_CPU_PARAMETERS}
-    ${SHARED_LINK_OPTIONS})
+    -Wl,-Map=${CM4_EXE}.map
+    ${CM4_CPU_PARAMETERS})
 
 target_compile_options(${CM7_EXE} PRIVATE
-    ${CM7_CPU_PARAMETERS}
-    ${SHARED_COMPILE_OPTIONS})
+    ${CM7_CPU_PARAMETERS})
 
 target_link_options(${CM7_EXE} PRIVATE
     -T${CM7_LINKER_SCRIPT}
-    ${CM7_CPU_PARAMETERS}
-    ${SHARED_LINK_OPTIONS})
+    -Wl,-Map=${CM7_EXE}.map
+    ${CM7_CPU_PARAMETERS})
 
 ###############################################################################
 
