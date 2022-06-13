@@ -1,6 +1,6 @@
 # STM32 Minimal CMake project for C/C++ projects
 cmake_minimum_required(VERSION 3.13)
-###############################################################################
+# ##############################################################################
 # Set project name and source code folder location
 
 project(${PROJECT_NAME})
@@ -8,8 +8,8 @@ set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Project)
 set(CM4_dir ${CMAKE_CURRENT_SOURCE_DIR}/CM4)
 set(CM7_dir ${CMAKE_CURRENT_SOURCE_DIR}/CM7)
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
-    set(CMAKE_BUILD_TYPE Debug)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+  set(CMAKE_BUILD_TYPE Debug)
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 option(DUMP_ASM "Create full assembly of final executable" OFF)
@@ -31,12 +31,12 @@ set(CM7_CPU_PARAMETERS
     -mfpu=fpv5-d16
     -mfloat-abi=hard)
 
-set(CM4_STARTUP_SCRIPT  ${CM4_dir}/Core/Startup/startup_stm32h755zitx.s)
-set(CM4_LINKER_SCRIPT   ${CM4_dir}/STM32H755ZITX_FLASH.ld)
-set(CM7_STARTUP_SCRIPT  ${CM7_dir}/Core/Startup/startup_stm32h755zitx.s)
-set(CM7_LINKER_SCRIPT   ${CM7_dir}/STM32H755ZITX_FLASH.ld)
+set(CM4_STARTUP_SCRIPT ${CM4_dir}/Core/Startup/startup_stm32h755zitx.s)
+set(CM4_LINKER_SCRIPT ${CM4_dir}/STM32H755ZITX_FLASH.ld)
+set(CM7_STARTUP_SCRIPT ${CM7_dir}/Core/Startup/startup_stm32h755zitx.s)
+set(CM7_LINKER_SCRIPT ${CM7_dir}/STM32H755ZITX_FLASH.ld)
 
-###############################################################################
+# ##############################################################################
 
 set(CM4_EXE ${CMAKE_PROJECT_NAME}-cm4)
 set(CM7_EXE ${CMAKE_PROJECT_NAME}-cm7)
@@ -49,19 +49,24 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
+add_compile_definitions(
+    $<$<CONFIG:Debug>:DEBUG>
+    USE_HAL_DRIVER)
+
 add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wshadow
-    -Wdouble-promotion
-    -Wformat=2 -Wformat-truncation
-    #-Wundef
-    -fno-common
-    -Wno-unused-parameter
-    "$<$<COMPILE_LANGUAGE:CXX>:-Wconversion;-Wno-volatile;-Wold-style-cast;-Wuseless-cast;-Wsuggest-override>"
-    "$<$<CONFIG:Debug>:-Og;-g3;-ggdb>"
-    "$<$<CONFIG:Release>:-Og;-g0>")
+  -Wall
+  -Wextra
+  -Wpedantic
+  -Wshadow
+  -Wdouble-promotion
+  -Wformat=2
+  -Wformat-truncation
+  # -Wundef
+  -fno-common
+  -Wno-unused-parameter
+  "$<$<COMPILE_LANGUAGE:CXX>:-Wconversion;-Wno-volatile;-Wold-style-cast;-Wuseless-cast;-Wsuggest-override>"
+  "$<$<CONFIG:Debug>:-Og;-g3;-ggdb>"
+  "$<$<CONFIG:Release>:-Og;-g0>")
 
 add_link_options(
     -Wl,--start-group
@@ -71,7 +76,7 @@ add_link_options(
     -Wl,--end-group
     -Wl,--print-memory-usage)
 
-###############################################################################
+# ##############################################################################
 
 set(STM32CUBEMX_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/${MCU_FAMILY}_HAL_Driver/Inc
@@ -79,53 +84,28 @@ set(STM32CUBEMX_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/Device/ST/${MCU_FAMILY}/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/Include)
 
-set(PROJECT_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
-
 file(GLOB_RECURSE STM32CUBEMX_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/Common/*.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/*.c)
 
-################################
-
+# ##############################################################################
+# CM4
 file(GLOB_RECURSE CM4_SOURCES CONFIGURE_DEPENDS
     ${CM4_dir}/Core/*.c)
 
-file(GLOB_RECURSE CM7_SOURCES CONFIGURE_DEPENDS
-    ${CM7_dir}/Core/*.c)
-
 add_executable(${CM4_EXE}
-    ${STM32CUBEMX_SOURCES} 
+    ${STM32CUBEMX_SOURCES}
     ${CM4_SOURCES}
     ${CM4_STARTUP_SCRIPT})
 
-add_executable(${CM7_EXE}
-    ${STM32CUBEMX_SOURCES} 
-    ${CM7_SOURCES}
-    ${CM7_STARTUP_SCRIPT})
-
 target_compile_definitions(${CM4_EXE} PRIVATE
-    $<$<CONFIG:Debug>:DEBUG>
-    ${CM4_MCU_MODEL}
-    USE_HAL_DRIVER)
-
-target_compile_definitions(${CM7_EXE} PRIVATE
-    $<$<CONFIG:Debug>:DEBUG>
-    ${CM7_MCU_MODEL}
-    USE_HAL_DRIVER)
+    ${CM4_MCU_MODEL})
 
 target_include_directories(${CM4_EXE} SYSTEM PRIVATE
     ${STM32CUBEMX_INCLUDE_DIRECTORIES})
 
 target_include_directories(${CM4_EXE} PRIVATE
     ${CM4_dir}/Core/Inc)
-
-target_include_directories(${CM7_EXE} SYSTEM PRIVATE
-    ${STM32CUBEMX_INCLUDE_DIRECTORIES})
-
-target_include_directories(${CM7_EXE} PRIVATE
-    ${CM7_dir}/Core/Inc)
-
-###############################################################################
 
 target_compile_options(${CM4_EXE} PRIVATE
     ${CM4_CPU_PARAMETERS})
@@ -135,6 +115,24 @@ target_link_options(${CM4_EXE} PRIVATE
     -Wl,-Map=${CM4_EXE}.map
     ${CM4_CPU_PARAMETERS})
 
+# CM7
+file(GLOB_RECURSE CM7_SOURCES CONFIGURE_DEPENDS
+    ${CM7_dir}/Core/*.c)
+
+add_executable(${CM7_EXE}
+    ${STM32CUBEMX_SOURCES}
+    ${CM7_SOURCES}
+    ${CM7_STARTUP_SCRIPT})
+
+target_compile_definitions(${CM7_EXE} PRIVATE
+    ${CM7_MCU_MODEL})
+
+target_include_directories(${CM7_EXE} SYSTEM PRIVATE
+    ${STM32CUBEMX_INCLUDE_DIRECTORIES})
+
+target_include_directories(${CM7_EXE} PRIVATE
+    ${CM7_dir}/Core/Inc)
+
 target_compile_options(${CM7_EXE} PRIVATE
     ${CM7_CPU_PARAMETERS})
 
@@ -143,7 +141,7 @@ target_link_options(${CM7_EXE} PRIVATE
     -Wl,-Map=${CM7_EXE}.map
     ${CM7_CPU_PARAMETERS})
 
-###############################################################################
+# ##############################################################################
 
 function(make_output EXECUTABLE)
     add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
@@ -151,7 +149,7 @@ function(make_output EXECUTABLE)
         COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${EXECUTABLE}> ${EXECUTABLE}.hex
         COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${EXECUTABLE}> ${EXECUTABLE}.bin)
 
-    If (${DUMP_ASM})
+    if(${DUMP_ASM})
         add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
             COMMAND ${CMAKE_OBJDUMP} -D -C $<TARGET_FILE:${EXECUTABLE}> > ${EXECUTABLE}.s)
     endif()
@@ -159,4 +157,3 @@ endfunction()
 
 make_output(${CM4_EXE})
 make_output(${CM7_EXE})
-
