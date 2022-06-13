@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.12)
 
 project(${PROJECT_NAME})
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Project)
-set(CM4-dir ${CMAKE_CURRENT_SOURCE_DIR}/CM4)
-set(CM7-dir ${CMAKE_CURRENT_SOURCE_DIR}/CM7)
+set(CM4_dir ${CMAKE_CURRENT_SOURCE_DIR}/CM4)
+set(CM7_dir ${CMAKE_CURRENT_SOURCE_DIR}/CM7)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
     set(CMAKE_BUILD_TYPE Debug)
@@ -31,15 +31,15 @@ set(CM7_CPU_PARAMETERS
     -mfpu=fpv5-d16
     -mfloat-abi=hard)
 
-set(CM4_STARTUP_SCRIPT  ${CM4-dir}/Core/Startup/startup_stm32h755zitx.s)
-set(CM4_LINKER_SCRIPT   ${CM4-dir}/STM32H755ZITX_FLASH.ld)
-set(CM7_STARTUP_SCRIPT  ${CM7-dir}/Core/Startup/startup_stm32h755zitx.s)
-set(CM7_LINKER_SCRIPT   ${CM7-dir}/STM32H755ZITX_FLASH.ld)
+set(CM4_STARTUP_SCRIPT  ${CM4_dir}/Core/Startup/startup_stm32h755zitx.s)
+set(CM4_LINKER_SCRIPT   ${CM4_dir}/STM32H755ZITX_FLASH.ld)
+set(CM7_STARTUP_SCRIPT  ${CM7_dir}/Core/Startup/startup_stm32h755zitx.s)
+set(CM7_LINKER_SCRIPT   ${CM7_dir}/STM32H755ZITX_FLASH.ld)
 
 ###############################################################################
 
-set(CM4-executable ${CMAKE_PROJECT_NAME}-cm4)
-set(CM7-executable ${CMAKE_PROJECT_NAME}-cm7)
+set(CM4_EXE ${CMAKE_PROJECT_NAME}-cm4)
+set(CM7_EXE ${CMAKE_PROJECT_NAME}-cm7)
 
 enable_language(C CXX ASM)
 set(CMAKE_C_STANDARD 11)
@@ -66,42 +66,42 @@ file(GLOB_RECURSE STM32CUBEMX_SOURCES CONFIGURE_DEPENDS
 ################################
 
 file(GLOB_RECURSE CM4_SOURCES CONFIGURE_DEPENDS
-    ${CM4-dir}/Core/*.c)
+    ${CM4_dir}/Core/*.c)
 
 file(GLOB_RECURSE CM7_SOURCES CONFIGURE_DEPENDS
-    ${CM7-dir}/Core/*.c)
+    ${CM7_dir}/Core/*.c)
 
-add_executable(${CM4-executable}
+add_executable(${CM4_EXE}
     ${STM32CUBEMX_SOURCES} 
     ${CM4_SOURCES}
     ${CM4_STARTUP_SCRIPT})
 
-add_executable(${CM7-executable}
+add_executable(${CM7_EXE}
     ${STM32CUBEMX_SOURCES} 
     ${CM7_SOURCES}
     ${CM7_STARTUP_SCRIPT})
 
-target_compile_definitions(${CM4-executable} PRIVATE
+target_compile_definitions(${CM4_EXE} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     ${CM4_MCU_MODEL}
     USE_HAL_DRIVER)
 
-target_compile_definitions(${CM7-executable} PRIVATE
+target_compile_definitions(${CM7_EXE} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     ${CM7_MCU_MODEL}
     USE_HAL_DRIVER)
 
-target_include_directories(${CM4-executable} SYSTEM PRIVATE
+target_include_directories(${CM4_EXE} SYSTEM PRIVATE
     ${STM32CUBEMX_INCLUDE_DIRECTORIES})
 
-target_include_directories(${CM4-executable} PRIVATE
-    ${CM4-dir}/Core/Inc)
+target_include_directories(${CM4_EXE} PRIVATE
+    ${CM4_dir}/Core/Inc)
 
-target_include_directories(${CM7-executable} SYSTEM PRIVATE
+target_include_directories(${CM7_EXE} SYSTEM PRIVATE
     ${STM32CUBEMX_INCLUDE_DIRECTORIES})
 
-target_include_directories(${CM7-executable} PRIVATE
-    ${CM7-dir}/Core/Inc)
+target_include_directories(${CM7_EXE} PRIVATE
+    ${CM7_dir}/Core/Inc)
 
 ###############################################################################
 
@@ -121,7 +121,7 @@ set(SHARED_COMPILE_OPTIONS
         -Wold-style-cast
         -Wuseless-cast
         -Wsuggest-override>
-    $<$<CONFIG:Debug>:-Os -g3 -ggdb>
+    $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>)
 
 set(SHARED_LINK_OPTIONS
@@ -133,20 +133,20 @@ set(SHARED_LINK_OPTIONS
     -Wl,--end-group
     -Wl,--print-memory-usage)
 
-target_compile_options(${CM4-executable} PRIVATE
+target_compile_options(${CM4_EXE} PRIVATE
     ${CM4_CPU_PARAMETERS}
     ${SHARED_COMPILE_OPTIONS})
 
-target_link_options(${CM4-executable} PRIVATE
+target_link_options(${CM4_EXE} PRIVATE
     -T${CM4_LINKER_SCRIPT}
     ${CM4_CPU_PARAMETERS}
     ${SHARED_LINK_OPTIONS})
 
-target_compile_options(${CM7-executable} PRIVATE
+target_compile_options(${CM7_EXE} PRIVATE
     ${CM7_CPU_PARAMETERS}
     ${SHARED_COMPILE_OPTIONS})
 
-target_link_options(${CM7-executable} PRIVATE
+target_link_options(${CM7_EXE} PRIVATE
     -T${CM7_LINKER_SCRIPT}
     ${CM7_CPU_PARAMETERS}
     ${SHARED_LINK_OPTIONS})
@@ -165,6 +165,6 @@ function(make_output EXECUTABLE)
     endif()
 endfunction()
 
-make_output(${CM4-executable})
-make_output(${CM7-executable})
+make_output(${CM4_EXE})
+make_output(${CM7_EXE})
 
